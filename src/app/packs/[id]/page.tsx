@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Bot, Copy, Layers, Tag } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
@@ -7,6 +8,7 @@ import { CopyButton } from "@/components/copy-button";
 import { PackCard } from "@/components/pack-card";
 import { AdSlot } from "@/components/ad-slot";
 import { absoluteUrl, buildMetadata, clampDescription, SITE_NAME } from "@/lib/seo";
+import { coverImage } from "@/lib/cover-image";
 import {
   getAllPackIds,
   getCategory,
@@ -80,6 +82,19 @@ export default async function PackDetailPage({
             </Link>
           ) : null}
         </nav>
+
+        {/* Cover */}
+        <div className="relative aspect-[21/9] overflow-hidden rounded-2xl border border-zinc-200/80 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+          <Image
+            src={coverImage(pack, 1280)}
+            alt={`${pack.title} cover`}
+            fill
+            priority
+            sizes="(max-width: 896px) 100vw, 896px"
+            className="object-cover"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        </div>
 
         {/* Header */}
         <header className="space-y-4">

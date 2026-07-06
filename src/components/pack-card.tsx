@@ -1,6 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Layers } from "lucide-react";
 import type { PackSummary } from "@/data/types";
+import { coverImage } from "@/lib/cover-image";
 
 // Deterministic gradient per category for a lively grid without images.
 const CATEGORY_GRADIENT: Record<string, string> = {
@@ -24,13 +26,22 @@ const CATEGORY_GRADIENT: Record<string, string> = {
 
 export function PackCard({ pack }: { pack: PackSummary }) {
   const gradient = CATEGORY_GRADIENT[pack.categoryId] ?? "from-violet-500/30 via-sky-400/20 to-cyan-400/20";
+  const cover = coverImage(pack, 640);
   return (
     <Link
       href={`/packs/${pack.id}`}
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-zinc-200/80 bg-white/80 shadow-sm backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-violet-300/70 hover:shadow-[0_18px_40px_rgba(99,102,241,0.16)] dark:border-zinc-800 dark:bg-zinc-950/70 dark:hover:border-violet-500/40"
     >
-      <div className={`relative flex aspect-[16/9] items-center justify-center bg-gradient-to-br ${gradient}`}>
-        <Layers className="h-10 w-10 text-white/70 drop-shadow" strokeWidth={1.4} />
+      <div className={`relative aspect-[16/9] overflow-hidden bg-gradient-to-br ${gradient}`}>
+        <Image
+          src={cover}
+          alt={`${pack.title} cover`}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
+          className="object-cover transition duration-500 group-hover:scale-[1.04]"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent" />
+        <Layers className="absolute bottom-3 right-3 h-6 w-6 text-white/80 drop-shadow" strokeWidth={1.5} />
         <span className="absolute left-3 top-3 rounded-full bg-white/85 px-2.5 py-0.5 text-[11px] font-semibold text-zinc-700 shadow-sm backdrop-blur dark:bg-zinc-900/80 dark:text-zinc-200">
           {pack.categoryName}
         </span>
