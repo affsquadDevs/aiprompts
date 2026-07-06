@@ -1,8 +1,40 @@
 @import "tailwindcss";
 
+/* `dark:` utilities follow `class="dark"` on <html> (next-themes), not OS preference */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Light = default. Dark only when html has .dark (theme toggle) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f6ff;
+  --foreground: #0f172a;
+  --glass-border: rgba(255, 255, 255, 0.72);
+  --glass-surface: rgba(255, 255, 255, 0.38);
+  --glass-hi: rgba(255, 255, 255, 0.95);
+  --glass-shadow: 0 12px 40px rgba(15, 23, 42, 0.09), 0 4px 12px rgba(15, 23, 42, 0.05);
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.92), inset 0 -1px 0 rgba(255, 255, 255, 0.35);
+  --liquid-shine: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
+}
+
+html.dark,
+.dark {
+  --background: #0a0b12;
+  --foreground: #f1f5f9;
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-surface: rgba(22, 24, 38, 0.52);
+  --glass-hi: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 4px 16px rgba(0, 0, 0, 0.35);
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  --liquid-shine: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.02) 45%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
 }
 
 @theme inline {
@@ -12,15 +44,256 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ----- Animated mesh (more “liquid” depth) ----- */
+@keyframes mesh-breathe {
+  0%,
+  100% {
+    background-position: 0% 40%, 100% 60%, 50% 100%, 0% 0%;
+  }
+  50% {
+    background-position: 100% 50%, 0% 40%, 50% 0%, 100% 100%;
   }
 }
 
-body {
-  background: var(--background);
+@keyframes liquid-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(6%, 4%) scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes liquid-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1.02);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate(-5%, -6%) scale(1);
+    opacity: 0.95;
+  }
+}
+
+@keyframes sheen-pass {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.mesh-page {
+  position: relative;
+  isolation: isolate;
+  background-color: #eef0ff;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-image: radial-gradient(
+      ellipse 95% 75% at 8% 18%,
+      rgba(199, 210, 254, 0.72) 0%,
+      transparent 58%
+    ),
+    radial-gradient(ellipse 80% 65% at 92% 8%, rgba(186, 230, 253, 0.62) 0%, transparent 52%),
+    radial-gradient(ellipse 70% 55% at 48% 92%, rgba(254, 215, 170, 0.5) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 70% 45%, rgba(196, 181, 253, 0.28) 0%, transparent 50%),
+    linear-gradient(168deg, #fbfbfd 0%, #eef1ff 38%, #faf8ff 72%, #fff5f8 100%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 200% 200%;
+  background-attachment: fixed;
+  animation: mesh-breathe 28s ease-in-out infinite;
+}
+
+/* Floating liquid orbs (light) */
+body.mesh-page::before,
+body.mesh-page::after {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(52px);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+
+body.mesh-page::before {
+  width: min(72vw, 600px);
+  height: min(72vw, 600px);
+  left: -12%;
+  top: -8%;
+  background: radial-gradient(circle at 35% 35%, rgba(139, 92, 246, 0.45), rgba(196, 181, 253, 0.15) 50%, transparent 70%);
+  animation: liquid-drift-a 26s ease-in-out infinite;
+}
+
+body.mesh-page::after {
+  width: min(65vw, 520px);
+  height: min(65vw, 520px);
+  right: -10%;
+  bottom: -5%;
+  background: radial-gradient(circle at 60% 50%, rgba(14, 165, 233, 0.35), rgba(125, 211, 252, 0.12) 50%, transparent 70%);
+  animation: liquid-drift-b 32s ease-in-out infinite;
+}
+
+html.dark body.mesh-page {
+  background-color: #05060c;
+  background-image: radial-gradient(
+      ellipse 85% 60% at 12% 22%,
+      rgba(99, 102, 241, 0.32) 0%,
+      transparent 58%
+    ),
+    radial-gradient(ellipse 75% 55% at 88% 12%, rgba(6, 182, 212, 0.14) 0%, transparent 52%),
+    radial-gradient(ellipse 65% 50% at 50% 88%, rgba(245, 158, 11, 0.1) 0%, transparent 55%),
+    linear-gradient(170deg, #0a0a12 0%, #0c0e18 45%, #080910 100%);
+  animation: none;
+}
+
+html.dark body.mesh-page::before,
+html.dark body.mesh-page::after {
+  mix-blend-mode: screen;
+  opacity: 0.55;
+  filter: blur(64px);
+}
+
+html.dark body.mesh-page::before {
+  background: radial-gradient(circle at 40% 40%, rgba(99, 102, 241, 0.4), rgba(67, 56, 202, 0.1) 55%, transparent 72%);
+  animation: liquid-drift-a 30s ease-in-out infinite;
+}
+
+html.dark body.mesh-page::after {
+  background: radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.22), rgba(8, 145, 178, 0.08) 55%, transparent 72%);
+  animation: liquid-drift-b 28s ease-in-out infinite;
+}
+
+/* Content above orbs */
+.mesh-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+body {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ----- Liquid glass layers ----- */
+.liquid-glass {
+  position: relative;
+  border: 1px solid var(--glass-border);
+  background: var(--liquid-shine), var(--glass-surface);
+  background-blend-mode: normal, normal;
+  box-shadow: var(--glass-shadow), var(--glass-inset);
+  backdrop-filter: blur(32px) saturate(1.65) brightness(1.02);
+  -webkit-backdrop-filter: blur(32px) saturate(1.65) brightness(1.02);
+}
+
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0) 48%,
+    rgba(255, 255, 255, 0.15) 100%
+  );
+  opacity: 0.5;
+  animation: sheen-pass 8s ease-in-out infinite;
+}
+
+html.dark .liquid-glass::before {
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.04) 100%);
+  opacity: 0.4;
+}
+
+.liquid-glass-hero {
+  backdrop-filter: blur(40px) saturate(1.75) brightness(1.03);
+  -webkit-backdrop-filter: blur(40px) saturate(1.75) brightness(1.03);
+  box-shadow: var(--glass-shadow), var(--glass-inset), 0 0 80px rgba(99, 102, 241, 0.08);
+}
+
+html.dark .liquid-glass-hero {
+  box-shadow: var(--glass-shadow), var(--glass-inset), 0 0 100px rgba(99, 102, 241, 0.12);
+}
+
+.liquid-glass-header {
+  backdrop-filter: blur(36px) saturate(1.5);
+  -webkit-backdrop-filter: blur(36px) saturate(1.5);
+  border: 1px solid var(--glass-border);
+  background: var(--liquid-shine), rgba(255, 255, 255, 0.32);
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.1), 0 2px 8px rgba(15, 23, 42, 0.05), var(--glass-inset);
+}
+
+html.dark .liquid-glass-header {
+  background: var(--liquid-shine), rgba(18, 20, 32, 0.45);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45), var(--glass-inset);
+}
+
+.liquid-prompt-dock {
+  position: relative;
+  border: 1px solid var(--glass-border);
+  background: var(--liquid-shine), rgba(255, 255, 255, 0.42);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15), 0 8px 24px rgba(15, 23, 42, 0.08), var(--glass-inset);
+  backdrop-filter: blur(40px) saturate(1.7) brightness(1.02);
+  -webkit-backdrop-filter: blur(40px) saturate(1.7) brightness(1.02);
+}
+
+html.dark .liquid-prompt-dock {
+  background: var(--liquid-shine), rgba(16, 18, 30, 0.58);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55), var(--glass-inset);
+}
+
+.liquid-prompt-dock::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(120% 80% at 10% 0%, rgba(255, 255, 255, 0.4) 0%, transparent 55%);
+  opacity: 0.4;
+}
+
+html.dark .liquid-prompt-dock::after {
+  background: radial-gradient(120% 80% at 10% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 55%);
+  opacity: 0.35;
+}
+
+.liquid-glass-toggle {
+  border: 1px solid var(--glass-border);
+  background: var(--liquid-shine), rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+html.dark .liquid-glass-toggle {
+  background: var(--liquid-shine), rgba(30, 32, 48, 0.6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.liquid-glass-rail {
+  border: 1px solid var(--glass-border);
+  background: var(--liquid-shine), rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(28px) saturate(1.55);
+  -webkit-backdrop-filter: blur(28px) saturate(1.55);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
+}
+
+html.dark .liquid-glass-rail {
+  background: var(--liquid-shine), rgba(18, 20, 32, 0.55);
+}
+
+/* Legacy utility — keep for any old usage */
+.glass-slab {
+  border: 1px solid var(--glass-border);
+  background: var(--glass-surface);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
+  backdrop-filter: blur(32px) saturate(1.5);
+  -webkit-backdrop-filter: blur(32px) saturate(1.5);
 }
