@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { buildMetadata } from "@/lib/seo";
+import {
+  absoluteUrl,
+  breadcrumbLd,
+  buildMetadata,
+  SITE_NAME,
+} from "@/lib/seo";
 import { AdSlot } from "@/components/ad-slot";
+import { JsonLd } from "@/components/json-ld";
 import { PackCard } from "@/components/pack-card";
 import {
   getCategories,
@@ -23,8 +29,27 @@ export default function CategoriesPage() {
   const meta = getMeta();
   const fmt = (n: number) => new Intl.NumberFormat("en-US").format(n);
 
+  const collectionLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "All AI prompt categories",
+    url: absoluteUrl("/categories"),
+    isPartOf: { "@type": "WebSite", name: SITE_NAME },
+    isAccessibleForFree: true,
+    hasPart: categories.map((c) => ({
+      "@type": "CollectionPage",
+      name: c.name,
+      url: absoluteUrl(`/packs?category=${c.id}`),
+    })),
+  };
+  const breadcrumb = breadcrumbLd([
+    { name: "Home", path: "/" },
+    { name: "Categories", path: "/categories" },
+  ]);
+
   return (
     <main className="mx-auto max-w-6xl space-y-8 px-4 py-10 pb-28">
+      <JsonLd data={[collectionLd, breadcrumb]} />
       <header className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">Categories</h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">

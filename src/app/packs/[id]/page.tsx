@@ -7,7 +7,15 @@ import { JsonLd } from "@/components/json-ld";
 import { CopyButton } from "@/components/copy-button";
 import { PackCard } from "@/components/pack-card";
 import { AdSlot } from "@/components/ad-slot";
-import { absoluteUrl, buildMetadata, clampDescription, SITE_NAME } from "@/lib/seo";
+import {
+  absoluteUrl,
+  breadcrumbLd,
+  buildMetadata,
+  clampDescription,
+  ogImageUrl,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/seo";
 import { coverImage } from "@/lib/cover-image";
 import {
   getAllPackIds,
@@ -37,6 +45,11 @@ export async function generateMetadata({
     description: clampDescription(`${pack.subtitle}. ${pack.description}`),
     path: `/packs/${pack.id}`,
     type: "article",
+    image: ogImageUrl({
+      eyebrow: pack.categoryName,
+      title: pack.title,
+      note: `${pack.promptCount} free prompts · ${pack.models.slice(0, 3).join(" · ")}`,
+    }),
   });
 }
 
@@ -53,22 +66,47 @@ export default async function PackDetailPage({
   const related = getRelatedPacks(pack, 6);
   const allText = pack.prompts.map((p) => `## ${p.title}\n\n${p.content}`).join("\n\n---\n\n");
 
-  const jsonLd = {
+  const creativeWorkLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
     name: pack.title,
+    headline: pack.title,
     description: clampDescription(`${pack.subtitle}. ${pack.description}`),
     about: pack.categoryName,
     keywords: pack.tags.join(", "),
+    inLanguage: "en",
     isAccessibleForFree: true,
+    isFamilyFriendly: true,
+    license: "https://creativecommons.org/publicdomain/zero/1.0/",
+    genre: pack.categoryName,
     url: absoluteUrl(`/packs/${pack.id}`),
-    publisher: { "@type": "Organization", name: SITE_NAME },
-    hasPart: pack.prompts.slice(0, 20).map((p) => ({ "@type": "CreativeWork", name: p.title })),
+    image: ogImageUrl({ eyebrow: pack.categoryName, title: pack.title }),
+    isPartOf: { "@type": "WebSite", name: SITE_NAME, url: SITE_URL },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    ...(pack.source?.name
+      ? { creditText: pack.source.name, sdLicense: pack.source.license }
+      : {}),
+    hasPart: pack.prompts.slice(0, 25).map((p) => ({
+      "@type": "CreativeWork",
+      name: p.title,
+      isAccessibleForFree: true,
+    })),
   };
+
+  const breadcrumb = breadcrumbLd([
+    { name: "Home", path: "/" },
+    { name: "Packs", path: "/packs" },
+    ...(category ? [{ name: category.name, path: `/packs?category=${category.id}` }] : []),
+    { name: pack.title, path: `/packs/${pack.id}` },
+  ]);
 
   return (
     <>
-      <JsonLd data={jsonLd} />
+      <JsonLd data={[creativeWorkLd, breadcrumb]} />
       <main className="mx-auto max-w-4xl space-y-8 px-4 py-8 pb-28 sm:py-10">
         <nav className="flex items-center gap-1.5 text-sm text-zinc-500">
           <Link href="/packs" className="inline-flex items-center gap-1 text-violet-700 hover:underline dark:text-violet-300">

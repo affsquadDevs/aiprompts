@@ -1,11 +1,23 @@
 import { ImageResponse } from "next/og";
+import type { NextRequest } from "next/server";
 import { SITE_NAME } from "@/lib/seo";
 
 export const runtime = "edge";
 
-// Default branded 1200×630 OpenGraph image, generated on the fly so social
-// shares always have a valid preview. Served at /og.
-export function GET() {
+// Dynamic 1200×630 OpenGraph image. With no query params it renders the default
+// branded card; pass ?title=&eyebrow=&note= for a page-specific card (used by
+// pack, category and other detail pages). Served at /og.
+export function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const clip = (s: string | null, n: number) =>
+    s && s.length > n ? `${s.slice(0, n - 1).trimEnd()}…` : s || "";
+
+  const eyebrow = clip(searchParams.get("eyebrow"), 60) || SITE_NAME;
+  const title = clip(searchParams.get("title"), 90) || "1,000+ Free AI Prompt Packs";
+  const note =
+    clip(searchParams.get("note"), 70) ||
+    "ChatGPT · Claude · Gemini · Midjourney — copy & paste, no account";
+
   return new ImageResponse(
     (
       <div
@@ -14,25 +26,60 @@ export function GET() {
           width: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
-          padding: "80px",
+          justifyContent: "space-between",
+          padding: "72px 80px",
           background:
-            "linear-gradient(135deg, #1e1b4b 0%, #4c1d95 50%, #0f172a 100%)",
+            "linear-gradient(135deg, #1e1b4b 0%, #4c1d95 55%, #0f172a 100%)",
           color: "white",
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ fontSize: 34, opacity: 0.85, marginBottom: 12 }}>
-          {SITE_NAME}
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 12,
+              background: "linear-gradient(135deg,#a78bfa,#22d3ee)",
+              display: "flex",
+            }}
+          />
+          <div style={{ fontSize: 30, fontWeight: 600, letterSpacing: -0.5 }}>
+            {SITE_NAME}
+          </div>
         </div>
-        <div style={{ fontSize: 76, fontWeight: 800, lineHeight: 1.05 }}>
-          1,000+ Free AI Prompt Packs
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div
+            style={{
+              fontSize: 26,
+              textTransform: "uppercase",
+              letterSpacing: 3,
+              color: "#c4b5fd",
+              marginBottom: 18,
+            }}
+          >
+            {eyebrow}
+          </div>
+          <div style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.05 }}>
+            {title}
+          </div>
         </div>
-        <div style={{ fontSize: 40, fontWeight: 600, opacity: 0.92, marginTop: 8 }}>
-          ChatGPT · Claude · Gemini · Midjourney
-        </div>
-        <div style={{ fontSize: 30, opacity: 0.7, marginTop: 28 }}>
-          Copy &amp; paste — no account, no paywall
+
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div
+            style={{
+              fontSize: 24,
+              fontWeight: 700,
+              padding: "8px 18px",
+              borderRadius: 999,
+              background: "#10b981",
+              color: "#04231a",
+            }}
+          >
+            FREE
+          </div>
+          <div style={{ fontSize: 28, opacity: 0.85 }}>{note}</div>
         </div>
       </div>
     ),
