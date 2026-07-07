@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Bot, Copy, Layers, Tag } from "lucide-react";
+import { ArrowLeft, Bot, Copy, HelpCircle, Layers, Lightbulb, ListChecks, Tag, Users } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { CopyButton } from "@/components/copy-button";
 import { PackCard } from "@/components/pack-card";
@@ -12,10 +12,12 @@ import {
   breadcrumbLd,
   buildMetadata,
   clampDescription,
+  faqLd,
   ogImageUrl,
   SITE_NAME,
   SITE_URL,
 } from "@/lib/seo";
+import { enrichPack } from "@/lib/pack-content";
 import { coverImage } from "@/lib/cover-image";
 import {
   getAllPackIds,
@@ -65,6 +67,7 @@ export default async function PackDetailPage({
   const category = getCategory(pack.categoryId);
   const related = getRelatedPacks(pack, 6);
   const allText = pack.prompts.map((p) => `## ${p.title}\n\n${p.content}`).join("\n\n---\n\n");
+  const enrich = enrichPack(pack);
 
   const creativeWorkLd = {
     "@context": "https://schema.org",
@@ -106,7 +109,7 @@ export default async function PackDetailPage({
 
   return (
     <>
-      <JsonLd data={[creativeWorkLd, breadcrumb]} />
+      <JsonLd data={[creativeWorkLd, breadcrumb, faqLd(enrich.faq)]} />
       <main className="mx-auto max-w-4xl space-y-8 px-4 py-8 pb-28 sm:py-10">
         <nav className="flex items-center gap-1.5 text-sm text-zinc-500">
           <Link href="/packs" className="inline-flex items-center gap-1 text-violet-700 hover:underline dark:text-violet-300">
@@ -186,6 +189,14 @@ export default async function PackDetailPage({
           </div>
         </header>
 
+        {/* Overview — page-specific editorial context */}
+        <section className="space-y-2">
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">Overview</h2>
+          <p className="max-w-3xl text-base leading-relaxed text-zinc-700 dark:text-zinc-300">
+            {enrich.overview}
+          </p>
+        </section>
+
         <AdSlot format="leaderboard" slotId={process.env.NEXT_PUBLIC_AD_SLOT_DETAIL} />
 
         {/* Prompts */}
@@ -213,6 +224,60 @@ export default async function PackDetailPage({
           </ul>
         </section>
 
+        {/* How to use */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <ListChecks className="h-5 w-5 text-zinc-500" />
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">How to use this pack</h2>
+          </div>
+          <ol className="grid gap-3 sm:grid-cols-2">
+            {enrich.howTo.map((step, i) => (
+              <li
+                key={step.title}
+                className="rounded-2xl border border-zinc-200/80 bg-white/70 p-4 dark:border-zinc-800 dark:bg-zinc-950/50"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-700 dark:text-violet-300">
+                  Step {i + 1}
+                </p>
+                <h3 className="mt-1 font-semibold text-zinc-900 dark:text-zinc-100">{step.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {/* Who it's for + tips */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <section className="space-y-3 rounded-2xl border border-zinc-200/80 bg-white/70 p-5 dark:border-zinc-800 dark:bg-zinc-950/50">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-zinc-500" />
+              <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Who it&rsquo;s for</h2>
+            </div>
+            <ul className="space-y-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+              {enrich.audience.map((a) => (
+                <li key={a} className="flex gap-2">
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-500" />
+                  {a}
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="space-y-3 rounded-2xl border border-zinc-200/80 bg-white/70 p-5 dark:border-zinc-800 dark:bg-zinc-950/50">
+            <div className="flex items-center gap-2">
+              <Lightbulb className="h-5 w-5 text-zinc-500" />
+              <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Tips for better results</h2>
+            </div>
+            <ul className="space-y-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+              {enrich.tips.map((t) => (
+                <li key={t} className="flex gap-2">
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+
         {pack.source ? (
           <p className="text-xs text-zinc-500 dark:text-zinc-500">
             Source:{" "}
@@ -226,6 +291,27 @@ export default async function PackDetailPage({
             · {pack.source.license}
           </p>
         ) : null}
+
+        {/* FAQ */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <HelpCircle className="h-5 w-5 text-zinc-500" />
+            <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">Frequently asked questions</h2>
+          </div>
+          <div className="space-y-3">
+            {enrich.faq.map((f) => (
+              <details
+                key={f.q}
+                className="group rounded-2xl border border-zinc-200/80 bg-white/70 p-4 open:shadow-sm dark:border-zinc-800 dark:bg-zinc-950/60"
+              >
+                <summary className="cursor-pointer list-none font-semibold text-zinc-900 marker:content-none dark:text-zinc-100">
+                  {f.q}
+                </summary>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
 
         {/* Related */}
         {related.length ? (

@@ -21,6 +21,10 @@ export const SITE_URL_IS_PLACEHOLDER =
 
 export const SITE_NAME = "PromptVault";
 
+/** Public contact / privacy / takedown address. Override per environment. */
+export const SITE_CONTACT_EMAIL =
+  process.env.NEXT_PUBLIC_CONTACT_EMAIL || "hello@affsquad.com";
+
 /** Live catalog totals — kept accurate automatically from the built dataset. */
 export const PACK_COUNT = meta.packCount;
 export const PROMPT_COUNT = meta.promptCount;
