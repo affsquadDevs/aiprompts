@@ -5,9 +5,9 @@ import { getMeta } from "@/data";
 import { AdSlot } from "@/components/ad-slot";
 
 export const metadata: Metadata = buildMetadata({
-  title: "About PromptVault",
+  title: "About PromptsVault",
   description:
-    `PromptVault is a free, ad-supported library of ${PACK_COUNT_FMT} AI prompt packs for ChatGPT, Claude, Gemini and Midjourney. No accounts, no paywalls.`,
+    `PromptsVault is a free, ad-supported library of ${PACK_COUNT_FMT} AI prompt packs for ChatGPT, Claude, Gemini and Midjourney. No accounts, no paywalls.`,
   path: "/about",
 });
 
@@ -17,11 +17,11 @@ export default function AboutPage() {
 
   return (
     <main className="mx-auto max-w-3xl space-y-6 px-4 py-10 pb-28">
-      <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">About PromptVault</h1>
+      <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">About PromptsVault</h1>
 
       <div className="space-y-4 text-base leading-relaxed text-zinc-700 dark:text-zinc-300">
         <p>
-          PromptVault is a free, ad-supported library of <strong>{fmt(meta.packCount)} prompt packs</strong> containing{" "}
+          PromptsVault is a free, ad-supported library of <strong>{fmt(meta.packCount)} prompt packs</strong> containing{" "}
           <strong>{fmt(meta.promptCount)} ready-to-use AI prompts</strong>. Everything here is free to read and copy —
           no account, no checkout, no paywall.
         </p>
@@ -44,7 +44,7 @@ export default function AboutPage() {
 
         <h2 className="pt-2 text-xl font-semibold text-zinc-900 dark:text-zinc-50">How it stays free</h2>
         <p>
-          PromptVault is supported entirely by advertising. There is nothing to buy and nothing to sell — the whole
+          PromptsVault is supported entirely by advertising. There is nothing to buy and nothing to sell — the whole
           catalog is open to everyone. Ads keep the lights on so the library can keep growing.
         </p>
       </div>

@@ -34,7 +34,7 @@ if (
   );
 }
 
-export const SITE_NAME = "PromptVault";
+export const SITE_NAME = "PromptsVault";
 
 /** Public contact / privacy / takedown address. Override per environment. */
 export const SITE_CONTACT_EMAIL =
