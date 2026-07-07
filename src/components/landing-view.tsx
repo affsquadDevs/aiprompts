@@ -232,30 +232,7 @@ export function LandingView({
             <ArrowRight className="h-4 w-4" />
           </Link>
         </section>
-
-        <Footer meta={meta} />
       </div>
     </div>
-  );
-}
-
-export function Footer({ meta }: { meta: CatalogMeta }) {
-  return (
-    <footer className="liquid-glass rounded-[1.75rem] px-4 py-6 sm:px-6">
-      <div className="rounded-2xl border border-white/50 bg-white/35 px-4 py-3 text-xs leading-relaxed text-zinc-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-400">
-        PromptVault provides free educational and productivity prompt templates. Prompts are sourced from openly-licensed
-        public collections (CC0 / MIT) and original industry playbooks. Always review AI-generated content before using
-        it for important work.
-      </div>
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-medium">
-        <Link href="/" className="text-zinc-700 transition hover:text-violet-700 dark:text-zinc-300 dark:hover:text-violet-300">Home</Link>
-        <Link href="/packs" className="text-zinc-700 transition hover:text-violet-700 dark:text-zinc-300 dark:hover:text-violet-300">Packs</Link>
-        <Link href="/categories" className="text-zinc-700 transition hover:text-violet-700 dark:text-zinc-300 dark:hover:text-violet-300">Categories</Link>
-        <Link href="/about" className="text-zinc-700 transition hover:text-violet-700 dark:text-zinc-300 dark:hover:text-violet-300">About</Link>
-      </div>
-      <p className="mt-4 text-center text-xs text-zinc-500 dark:text-zinc-500">
-        © 2026 PromptVault · {new Intl.NumberFormat("en-US").format(meta.packCount)} free packs · Ad-supported
-      </p>
-    </footer>
   );
 }

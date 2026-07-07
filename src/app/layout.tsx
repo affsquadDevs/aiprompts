@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { ConsentBanner } from "@/components/consent-banner";
 import { JsonLd } from "@/components/json-ld";
 import {
   DEFAULT_OG_IMAGE,
@@ -10,6 +12,7 @@ import {
   SITE_TAGLINE,
   SITE_URL,
 } from "@/lib/seo";
+import { ADSENSE_CLIENT_ID, ADS_ENABLED } from "@/lib/ads";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -115,8 +118,6 @@ const websiteJsonLd = {
   },
 };
 
-const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -129,21 +130,32 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="mesh-page min-h-full flex flex-col">
-        {/* Ad network loader — only emitted when a client id is configured. */}
-        {ADSENSE_CLIENT ? (
+        {/* Google Consent Mode v2 defaults. Runs before the ad loader so that
+            EEA/UK/CH visitors default to "denied" until they choose in the
+            consent banner. Elsewhere, ads default to personalized. */}
+        <Script id="google-consent-default" strategy="beforeInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('consent','default',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});gtag('consent','default',{region:['EEA','GB','CH'],ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});`}
+        </Script>
+
+        {/* Google AdSense loader — present site-wide (equivalent to placing the
+            AdSense snippet in <head> on every page). */}
+        {ADS_ENABLED ? (
           <Script
             id="adsbygoogle-init"
             async
             strategy="afterInteractive"
             crossOrigin="anonymous"
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
           />
         ) : null}
+
         <JsonLd data={[organizationJsonLd, websiteJsonLd]} />
         <Providers>
           <SiteHeader />
           {children}
+          <SiteFooter />
         </Providers>
+        <ConsentBanner />
       </body>
     </html>
   );

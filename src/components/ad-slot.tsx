@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { ADSENSE_CLIENT_ID, ADS_ENABLED } from "@/lib/ads";
 
 /**
  * Ad placement slot.
  *
- * The whole site is free and ad-supported. Drop your ad code here once:
- *  - Set NEXT_PUBLIC_ADSENSE_CLIENT (e.g. "ca-pub-1234567890123456") and pass a
- *    `slotId` to render a real Google AdSense unit, OR
- *  - Replace the placeholder block below with any ad network's snippet.
+ * The whole site is free and ad-supported.
+ *  - With a publisher id configured (default) AND a `slotId` passed, a real
+ *    Google AdSense unit renders, labelled "Advertisement".
+ *  - With a publisher id but NO `slotId`, the slot renders nothing so Google
+ *    Auto ads (enabled in the AdSense console) can control placement instead.
+ *  - With no publisher id at all (e.g. local dev), a clearly-labelled
+ *    placeholder is shown so you can see where ads will appear.
  *
- * Until a client id is configured, a clearly-labelled placeholder is shown so
- * you can see exactly where ads will appear.
+ * Per-placement slot ids come from NEXT_PUBLIC_AD_SLOT_* env vars.
  */
 
 type AdFormat = "leaderboard" | "rectangle" | "inline" | "sidebar";
@@ -22,8 +25,6 @@ const SIZES: Record<AdFormat, string> = {
   inline: "min-h-[120px] w-full",
   sidebar: "min-h-[600px] w-full",
 };
-
-const ADSENSE_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 declare global {
   interface Window {
@@ -45,7 +46,7 @@ export function AdSlot({
   const pushed = useRef(false);
 
   useEffect(() => {
-    if (!ADSENSE_CLIENT || !slotId || pushed.current) return;
+    if (!ADS_ENABLED || !slotId || pushed.current) return;
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
       pushed.current = true;
@@ -54,22 +55,31 @@ export function AdSlot({
     }
   }, [slotId]);
 
-  if (ADSENSE_CLIENT && slotId) {
+  // Real AdSense unit (publisher id + explicit slot id).
+  if (ADS_ENABLED && slotId) {
     return (
-      <div className={`overflow-hidden ${SIZES[format]} ${className}`} aria-hidden>
-        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-        <ins
-          className="adsbygoogle block"
-          style={{ display: "block" }}
-          data-ad-client={ADSENSE_CLIENT}
-          data-ad-slot={slotId}
-          data-ad-format="auto"
-          data-full-width-responsive="true"
-        />
+      <div className={`mx-auto w-full ${className}`}>
+        <p className="mb-1 text-center text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-600">
+          {label}
+        </p>
+        <div className={`overflow-hidden ${SIZES[format]}`}>
+          <ins
+            className="adsbygoogle block"
+            style={{ display: "block" }}
+            data-ad-client={ADSENSE_CLIENT_ID}
+            data-ad-slot={slotId}
+            data-ad-format="auto"
+            data-full-width-responsive="true"
+          />
+        </div>
       </div>
     );
   }
 
+  // Publisher id present but no slot id → let Auto ads place ads; render nothing.
+  if (ADS_ENABLED) return null;
+
+  // No publisher id (local dev) → labelled placeholder.
   return (
     <div
       className={`flex items-center justify-center rounded-2xl border border-dashed border-zinc-300/70 bg-zinc-100/40 text-center dark:border-zinc-700/70 dark:bg-white/[0.02] ${SIZES[format]} ${className}`}
