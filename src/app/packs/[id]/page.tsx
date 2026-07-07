@@ -13,6 +13,7 @@ import {
   buildMetadata,
   clampDescription,
   faqLd,
+  licenseUrl,
   ogImageUrl,
   SITE_NAME,
   SITE_URL,
@@ -80,7 +81,7 @@ export default async function PackDetailPage({
     inLanguage: "en",
     isAccessibleForFree: true,
     isFamilyFriendly: true,
-    license: "https://creativecommons.org/publicdomain/zero/1.0/",
+    license: licenseUrl(pack.source?.license),
     genre: pack.categoryName,
     url: absoluteUrl(`/packs/${pack.id}`),
     image: ogImageUrl({ eyebrow: pack.categoryName, title: pack.title }),
@@ -90,9 +91,7 @@ export default async function PackDetailPage({
       name: SITE_NAME,
       url: SITE_URL,
     },
-    ...(pack.source?.name
-      ? { creditText: pack.source.name, sdLicense: pack.source.license }
-      : {}),
+    ...(pack.source?.name ? { creditText: pack.source.name } : {}),
     hasPart: pack.prompts.slice(0, 25).map((p) => ({
       "@type": "CreativeWork",
       name: p.title,
@@ -103,7 +102,7 @@ export default async function PackDetailPage({
   const breadcrumb = breadcrumbLd([
     { name: "Home", path: "/" },
     { name: "Packs", path: "/packs" },
-    ...(category ? [{ name: category.name, path: `/packs?category=${category.id}` }] : []),
+    ...(category ? [{ name: category.name, path: `/categories/${category.id}` }] : []),
     { name: pack.title, path: `/packs/${pack.id}` },
   ]);
 
@@ -118,7 +117,7 @@ export default async function PackDetailPage({
           </Link>
           <span>/</span>
           {category ? (
-            <Link href={`/packs?category=${category.id}`} className="hover:underline">
+            <Link href={`/categories/${category.id}`} className="hover:underline">
               {category.name}
             </Link>
           ) : null}
@@ -128,7 +127,7 @@ export default async function PackDetailPage({
         <div className="relative aspect-[21/9] overflow-hidden rounded-2xl border border-zinc-200/80 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
           <Image
             src={coverImage(pack, 1280)}
-            alt={`${pack.title} cover`}
+            alt={`${pack.title} — ${pack.categoryName} AI prompt pack cover`}
             fill
             priority
             sizes="(max-width: 896px) 100vw, 896px"
@@ -145,7 +144,7 @@ export default async function PackDetailPage({
             </span>
             {category ? (
               <Link
-                href={`/packs?category=${category.id}`}
+                href={`/categories/${category.id}`}
                 className="rounded-full border border-violet-200/60 bg-violet-500/10 px-2.5 py-0.5 text-xs font-medium text-violet-800 transition hover:bg-violet-500/20 dark:border-violet-500/20 dark:text-violet-200"
               >
                 {category.name}

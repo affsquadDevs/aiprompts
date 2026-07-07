@@ -6,8 +6,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "daily", priority: 1 },
-    { url: `${SITE_URL}/packs`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
+    { url: `${SITE_URL}/packs`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${SITE_URL}/categories`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
     { url: `${SITE_URL}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
@@ -15,8 +15,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
   ];
 
+  // Real, indexable category landing pages (not the /packs?category= filter,
+  // which canonicalizes to /packs).
   const categoryRoutes: MetadataRoute.Sitemap = getCategories().map((c) => ({
-    url: `${SITE_URL}/packs?category=${c.id}`,
+    url: `${SITE_URL}/categories/${c.id}`,
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.7,
@@ -25,8 +27,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const packRoutes: MetadataRoute.Sitemap = getAllPackIds().map((id) => ({
     url: `${SITE_URL}/packs/${id}`,
     lastModified: now,
-    changeFrequency: "weekly",
-    priority: 0.8,
+    changeFrequency: "monthly",
+    priority: 0.6,
   }));
 
   return [...staticRoutes, ...categoryRoutes, ...packRoutes];

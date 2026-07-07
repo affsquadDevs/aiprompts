@@ -19,6 +19,21 @@ export const SITE_URL_IS_PLACEHOLDER =
   !process.env.NEXT_PUBLIC_SITE_URL ||
   /localhost|127\.0\.0\.1|\.example$/.test(SITE_URL);
 
+// Build/server-time guard: loudly warn if the site is built for production
+// without a real domain, since every canonical URL, the sitemap, robots.txt,
+// OpenGraph/Twitter card and JSON-LD would then point at a placeholder origin.
+if (
+  typeof window === "undefined" &&
+  process.env.NODE_ENV === "production" &&
+  SITE_URL_IS_PLACEHOLDER
+) {
+  console.warn(
+    `\n⚠️  NEXT_PUBLIC_SITE_URL is not set to a real domain (using "${SITE_URL}").\n` +
+      `   Canonical URLs, sitemap, robots.txt, OpenGraph and JSON-LD will be wrong.\n` +
+      `   Set NEXT_PUBLIC_SITE_URL before deploying to production.\n`,
+  );
+}
+
 export const SITE_NAME = "PromptVault";
 
 /** Public contact / privacy / takedown address. Override per environment. */
@@ -43,6 +58,20 @@ export const SITE_DESCRIPTION =
 export function absoluteUrl(path = "/"): string {
   if (/^https?:\/\//i.test(path)) return path;
   return `${SITE_URL}${path.startsWith("/") ? "" : "/"}${path}`;
+}
+
+/**
+ * Map a source license string to a canonical license URL for structured data.
+ * Returns undefined for unknown licenses so the `license` field is simply
+ * omitted rather than asserting an incorrect one.
+ */
+export function licenseUrl(license?: string | null): string | undefined {
+  if (!license) return undefined;
+  const l = license.toLowerCase();
+  if (l.includes("cc0")) return "https://creativecommons.org/publicdomain/zero/1.0/";
+  if (l.includes("mit")) return "https://opensource.org/license/mit";
+  if (l.includes("original")) return absoluteUrl("/terms");
+  return undefined;
 }
 
 /**

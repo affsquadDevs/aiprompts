@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, PACK_COUNT_FMT } from "@/lib/seo";
 import { getMeta } from "@/data";
 import { AdSlot } from "@/components/ad-slot";
 
 export const metadata: Metadata = buildMetadata({
   title: "About PromptVault",
   description:
-    "PromptVault is a free, ad-supported library of 1,000+ AI prompt packs for ChatGPT, Claude, Gemini and Midjourney. No accounts, no paywalls.",
+    `PromptVault is a free, ad-supported library of ${PACK_COUNT_FMT} AI prompt packs for ChatGPT, Claude, Gemini and Midjourney. No accounts, no paywalls.`,
   path: "/about",
 });
 

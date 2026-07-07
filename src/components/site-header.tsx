@@ -43,7 +43,7 @@ export function SiteHeader() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               type="search"
-              placeholder="Search 1,000+ free prompt packs…"
+              placeholder="Search free prompt packs…"
               className="w-full rounded-full border border-zinc-200/80 bg-white/70 py-1.5 pl-9 pr-3 text-sm text-zinc-800 outline-none transition focus:border-violet-400 focus:bg-white dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-100 dark:focus:border-violet-500"
             />
           </div>
