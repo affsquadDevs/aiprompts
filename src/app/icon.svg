@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="PromptVault">
+  <defs>
+    <linearGradient id="pv" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c3aed"/>
+      <stop offset=".5" stop-color="#4c1d95"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#pv)"/>
+  <path d="M204 118 V394 M204 118 H308 A72 72 0 0 1 308 262 H204"
+        fill="none" stroke="#fff" stroke-width="58"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
