@@ -5,18 +5,16 @@ import meta from "@/data/meta.json";
  * Canonical site origin used for absolute URLs in metadata, OpenGraph,
  * sitemap, robots and JSON-LD.
  *
- * Set NEXT_PUBLIC_SITE_URL to your real domain in production (e.g.
- * https://yourdomain.com). Until it is set, a documented placeholder is used so
- * builds succeed — but canonical URLs, the sitemap and social previews will be
- * wrong until you point it at the live domain.
+ * Defaults to the production domain so the sitemap, canonical URLs and social
+ * previews are correct out of the box. Override with NEXT_PUBLIC_SITE_URL for
+ * other environments (e.g. a staging domain).
  */
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://aiprompts.example"
+  process.env.NEXT_PUBLIC_SITE_URL || "https://prompts-vault.app"
 ).replace(/\/$/, "");
 
-/** True when a real production domain has been configured. */
+/** True when SITE_URL is a non-production placeholder (localhost / .example). */
 export const SITE_URL_IS_PLACEHOLDER =
-  !process.env.NEXT_PUBLIC_SITE_URL ||
   /localhost|127\.0\.0\.1|\.example$/.test(SITE_URL);
 
 // Build/server-time guard: loudly warn if the site is built for production
