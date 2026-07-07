@@ -128,13 +128,14 @@ export default async function CategoryDetailPage({
           </section>
         ) : null}
 
-        <AdSlot format="leaderboard" slotId={process.env.NEXT_PUBLIC_AD_SLOT_CATEGORIES} />
+        <AdSlot format="leaderboard" slotId={process.env.NEXT_PUBLIC_AD_SLOT_CATEGORY_DETAIL} />
 
         <section className="space-y-4">
           <div className="flex flex-wrap items-end justify-between gap-2">
             <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">Popular {category.name} packs</h2>
             <Link
               href={`/packs?category=${category.id}`}
+              rel="nofollow"
               className="text-sm font-medium text-violet-700 hover:underline dark:text-violet-300"
             >
               Search &amp; filter all {nf.format(packCount)} →

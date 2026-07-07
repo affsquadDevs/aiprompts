@@ -4,17 +4,21 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 /**
- * Cookie / ad-consent banner backed by Google Consent Mode v2.
+ * Cookie / ad-consent notice backed by Google Consent Mode v2.
  *
- * Consent defaults are set to `denied` for EEA/UK/CH visitors in the inline
- * script in `layout.tsx` (which runs before the AdSense loader). This banner
- * lets the visitor grant or refuse, then calls `gtag('consent','update', …)`
- * so Google serves personalized vs. non-personalized ads accordingly. The
- * choice is remembered in localStorage so the banner only appears once.
+ * IMPORTANT — EEA/UK/CH: Google's EU User Consent Policy requires a
+ * Google-certified CMP (IAB TCF v2.2). The REQUIRED, primary consent mechanism
+ * is therefore Google's certified CMP, enabled in the AdSense console
+ * (Privacy & messaging → GDPR message / Funding Choices). When that CMP is
+ * present, this component detects it (`__tcfapi` / `googlefc`) and does NOT
+ * render, so there is never a double banner and the certified CMP governs
+ * consent for regulated regions.
  *
- * For full IAB TCF v2.2 coverage you can additionally enable Google's
- * certified CMP in the AdSense console (Privacy & messaging) — it co-operates
- * with the same Consent Mode signals used here.
+ * This component is a FALLBACK notice for regions without that requirement (and
+ * for the window before the certified CMP is configured): it reads the Consent
+ * Mode v2 defaults set in `layout.tsx` and, on the visitor's choice, calls
+ * `gtag('consent','update', …)` so Google serves personalized vs.
+ * non-personalized ads accordingly. The choice is remembered in localStorage.
  */
 
 const STORAGE_KEY = "pv-consent-v1";
@@ -23,7 +27,17 @@ declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
     dataLayer?: unknown[];
+    __tcfapi?: (...args: unknown[]) => void;
+    googlefc?: unknown;
   }
+}
+
+/** True when a Google-certified CMP (Funding Choices / IAB TCF) is present. */
+function hasCertifiedCmp(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    (typeof window.__tcfapi === "function" || window.googlefc != null)
+  );
 }
 
 function updateConsent(granted: boolean) {
@@ -40,16 +54,29 @@ export function ConsentBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    // Respect a prior choice immediately.
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === "granted" || saved === "denied") {
         updateConsent(saved === "granted");
-      } else {
-        setVisible(true);
+        return;
       }
     } catch {
-      setVisible(true);
+      /* storage unavailable — fall through to showing the notice */
     }
+
+    // Defer entirely to a Google-certified CMP when one is configured. It may
+    // load asynchronously via the AdSense tag, so give it a moment to register
+    // before falling back to our own notice.
+    if (hasCertifiedCmp()) return;
+    let cancelled = false;
+    const t = setTimeout(() => {
+      if (!cancelled && !hasCertifiedCmp()) setVisible(true);
+    }, 1200);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
   }, []);
 
   function choose(granted: boolean) {
