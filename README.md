@@ -1,4 +1,4 @@
-# PromptVault
+# PromptsVault
 
 A free, ad-supported library of AI prompt packs for ChatGPT, Claude, Gemini and
 Midjourney. Fully static content (no backend, no database, no auth) built with

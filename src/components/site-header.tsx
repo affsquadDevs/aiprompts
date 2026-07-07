@@ -33,7 +33,7 @@ export function SiteHeader() {
           <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900">
             <Library className="h-4 w-4" />
           </span>
-          <span className="hidden min-[400px]:inline">PromptVault</span>
+          <span className="hidden min-[400px]:inline">PromptsVault</span>
         </Link>
 
         <form onSubmit={onSearch} className="hidden min-w-0 flex-1 justify-center md:flex">
@@ -43,7 +43,7 @@ export function SiteHeader() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               type="search"
-              placeholder="Search 1,000+ free prompt packs…"
+              placeholder="Search free prompt packs…"
               className="w-full rounded-full border border-zinc-200/80 bg-white/70 py-1.5 pl-9 pr-3 text-sm text-zinc-800 outline-none transition focus:border-violet-400 focus:bg-white dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-100 dark:focus:border-violet-500"
             />
           </div>

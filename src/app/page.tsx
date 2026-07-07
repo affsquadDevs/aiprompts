@@ -16,7 +16,7 @@ import {
 
 const FAQS = [
   {
-    q: "Is PromptVault free to use?",
+    q: "Is PromptsVault free to use?",
     a: `Yes. Every one of the ${PACK_COUNT_FMT} prompt packs and ${PROMPT_COUNT_FMT} prompts is completely free to read and copy. The site is supported by ads — there is no account, checkout or paywall.`,
   },
   {
@@ -33,7 +33,7 @@ const FAQS = [
   },
   {
     q: "How many prompts are available?",
-    a: `PromptVault currently offers ${PACK_COUNT_FMT} curated prompt packs containing ${PROMPT_COUNT_FMT} ready-to-use prompts across categories like writing, marketing, SEO, coding, design and more.`,
+    a: `PromptsVault currently offers ${PACK_COUNT_FMT} curated prompt packs containing ${PROMPT_COUNT_FMT} ready-to-use prompts across categories like writing, marketing, SEO, coding, design and more.`,
   },
   {
     q: "Can I use these prompts for commercial work?",

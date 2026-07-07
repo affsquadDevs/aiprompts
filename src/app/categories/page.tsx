@@ -39,7 +39,7 @@ export default function CategoriesPage() {
     hasPart: categories.map((c) => ({
       "@type": "CollectionPage",
       name: c.name,
-      url: absoluteUrl(`/packs?category=${c.id}`),
+      url: absoluteUrl(`/categories/${c.id}`),
     })),
   };
   const breadcrumb = breadcrumbLd([
@@ -68,13 +68,17 @@ export default function CategoriesPage() {
             <section key={c.id} className="space-y-4">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">{c.name}</h2>
+                  <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+                    <Link href={`/categories/${c.id}`} className="hover:text-violet-700 hover:underline dark:hover:text-violet-300">
+                      {c.name}
+                    </Link>
+                  </h2>
                   <p className="text-sm text-zinc-600 dark:text-zinc-400">
                     {c.blurb} · {c.packCount} packs · {fmt(totalPromptsInCategory(c.id))} prompts
                   </p>
                 </div>
                 <Link
-                  href={`/packs?category=${c.id}`}
+                  href={`/categories/${c.id}`}
                   className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-violet-700 hover:underline dark:text-violet-300"
                 >
                   See all {c.packCount} <ArrowRight className="h-3.5 w-3.5" />

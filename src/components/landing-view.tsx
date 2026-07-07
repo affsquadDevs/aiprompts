@@ -70,7 +70,7 @@ function SectionTitle({
 }
 
 const STEPS = [
-  { icon: Search, title: "Find a pack", text: "Browse 16 categories or search 1,000+ packs by topic, tool, or industry." },
+  { icon: Search, title: "Find a pack", text: "Browse by category or search the full library by topic, tool, or industry." },
   { icon: Copy, title: "Copy a prompt", text: "Every prompt is unlocked and free. Copy it with one click — no sign-up." },
   { icon: Bot, title: "Paste & run", text: "Drop it into ChatGPT, Claude, Gemini, Midjourney and fill in the blanks." },
 ];
@@ -146,7 +146,7 @@ export function LandingView({
               return (
                 <Link
                   key={c.id}
-                  href={`/packs?category=${encodeURIComponent(c.id)}`}
+                  href={`/categories/${c.id}`}
                   className="group flex items-center gap-3 rounded-2xl border border-white/50 bg-white/50 p-3.5 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-violet-300/80 hover:bg-violet-50/70 dark:border-white/10 dark:bg-zinc-800/40 dark:hover:border-violet-500/40 dark:hover:bg-violet-950/20"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-sky-500/20 text-violet-700 dark:text-violet-300">
